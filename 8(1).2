@@ -1,0 +1,86 @@
+id.txt
+
+ED12 34
+AB12 45
+RT67 34
+DF56 09
+FL12 66
+
+
+input.txt
+ED12-34,it,Megha Smriti,9000,bangalore
+AB12-45,sales,bob,1000,up
+RT67-34,it,ben,8000,haryana
+DF56-09,it,sunny,9000,bangalore
+FL12-66,sales,helen,6000,punjab
+DE98-33,it,sam,3000,patna
+ED12-34,it,Megha Smriti,9000,bangalore
+
+input1.txt
+AB12-45,sales,bob,1000,up
+RT67-34,it,ben,8000,haryana
+DF56-09,it,sunny,9000,bangalore
+FL12-66,sales,helen,6000,punjab
+DE98-33,it,sam,3000,patna
+
+
+1)Concat
+
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+A= LOAD 'id.txt' USING PigStorage(',') AS (cc:charaaray,mm:int);
+B = FOREACH A GENERATE CONCAT(cc,'-',mm) as newid; 
+C = JOIN B by id,B by newid;
+dump C;
+
+2)Tokenize
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+stud_name = FOREACH B GENERATE TOKENSIZE(name) as name;
+dump stud_name;
+
+out:
+({(Megha),(Smriti)})
+
+
+
+3)Sum
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+grouped = GROUP B by dept;
+max_sal = FOREACH grouped generate group, SUM(b.salary);
+
+4)Min
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+grouped = GROUP B by dept;
+max_sal = FOREACH grouped generate MIN(b.salary);
+
+5)Max
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+grouped = GROUP B by dept;
+max_sal = FOREACH grouped generate group, MAX(b.salary);
+
+6)Limit
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+few_rec = LIMIT B 3;
+
+7)Store
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+A= LOAD 'input.txt' USING PigStorage(',') AS (cc:charaaray,mm:int);
+B = FOREACH A GENERATE CONCAT(cc,'-',mm) as newid; 
+C = JOIN B by id,B by newid;
+store C INTO '/stored.txt';
+
+8)Distinct
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+distinc_data = DISTINCT B;
+dump distinc_data;
+
+9)Flatten
+
+
+
+10)IsEmpty
+B= LOAD 'input.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+D = LOAD 'input1.txt' USING PigStorage(',') AS (id:chararray,dept:chararray,name:chararray,salary:long,city:chararray);
+co_grouped = COGROUP B by id, D by id;
+isempty_data = filter co_grouped by IsEmpty(D);
+
+
